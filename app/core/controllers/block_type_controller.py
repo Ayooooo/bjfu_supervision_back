@@ -11,8 +11,16 @@ def insert_block_type(mongo, block_type):
     return True
 #传入BlockType对象，存入数据库
 
+def find_block_type(mongo, _id):
+    try:
+        condition = {'using':True, '_id':ObjectId(_id)}
+    except:
+        return None
+    data = mongo.db.block_type.find_one(condition)
+    return data
 
-def find_block_type(mongo, condition=None):
+def find_block_types(mongo, condition=None):
+    condition['using'] = True
     if condition is None:
         return mongo.db.block_type.find()
     if '_id' in condition:
@@ -24,6 +32,7 @@ def find_block_type(mongo, condition=None):
 
 
 def delete_block_type(mongo, condition=None):
+    condition['using'] = True
     if condition is None:
         return False
     try:
@@ -34,6 +43,7 @@ def delete_block_type(mongo, condition=None):
 
 
 def update_block_type(mongo, condition=None, update_dict= None):
+    condition['using'] = True
     if condition is None:
         condition = {}
     try:
@@ -48,8 +58,7 @@ def update_block_type(mongo, condition=None, update_dict= None):
 def request_to_class(json_request={}):
     block_type = BlockType()
     for k, v in json_request.items():
-        if k in block_type.model:
-            block_type.model[k]= v
+        block_type.model[k]= v
     return block_type
 
 #传入request.json字典,返回一个BlockType对象
@@ -58,7 +67,6 @@ def request_to_class(json_request={}):
 def request_to_change(json_request={}):
     change = {}
     for k, v in json_request.items():
-        if k in BlockType().model:
             change[k] = v
     return change
 

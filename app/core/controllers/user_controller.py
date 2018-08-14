@@ -15,7 +15,7 @@ def find_user(mongo, _id):
         condition={'using':True,'_id':ObjectId(_id)}
     except:
         return None
-    datas = mongo.db.user.find(condition)
+    datas = mongo.db.user.find_one(condition)
     return datas
 
 
@@ -37,18 +37,18 @@ def delete_user(mongo, condition=None):
 def request_to_class(json_request):
     user = User()
     name = json_request.get('name', None)
+
     information_datas = json_request.get('information', {})
     events_datas = json_request.get('events',[])
     user.name = name
     if information_datas is not None:
         for k, v in information_datas.items():
-            if k in user.model['information']:
                 user.model['information'][k] = v
     if events_datas is not None:
         for events_data in events_datas:
+
             event = Event()
             for k, v in events_data.items():
-                if k in event.model:
                     event.model[k] = v
             user.events.append(event)
     return user
@@ -130,7 +130,7 @@ def delete_event(mongo,_id,event_id):
         condition_user={'using':True,'_id':ObjectId(_id)}
     except:
         return False
-        user_datas = mongo.db.user.find_one(condition_user)
+    user_datas = mongo.db.user.find_one(condition_user)
     if user_datas is None:
         return None
     for event_data in user_datas["events"]:

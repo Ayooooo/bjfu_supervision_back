@@ -11,12 +11,23 @@ def insert_item_type(mongo, item_type):
     return True
 #传入ItemType对象，存入数据库
 
+def find_item_type(mongo, _id):
+    try:
+        condition = {'using':True, '_id':ObjectId(_id)}
+    except:
+        return None
+    data = mongo.db.item_type.find_one(condition)
+    return data
 
-def find_item_type(mongo, condition=None):
+def find_item_types(mongo, condition=None):
+    condition['using'] = True
     if condition is None:
         return mongo.db.item_type.find()
     if '_id' in condition:
-        condition['_id']['$in'] = [ObjectId(item) for item in condition['_id']['$in']]
+        try:
+            condition['_id']['$in'] = [ObjectId(item) for item in condition['_id']['$in']]
+        except:
+            return None
     datas = mongo.db.item_type.find(condition)
     return datas
 
@@ -24,6 +35,7 @@ def find_item_type(mongo, condition=None):
 
 
 def delete_item_type(mongo, condition=None):
+    condition['using'] = True
     if condition is None:
         return False
     try:
@@ -34,6 +46,7 @@ def delete_item_type(mongo, condition=None):
 
 
 def update_item_type(mongo, condition=None, update_dict= None):
+    condition['using'] = True
     if condition is None:
         condition = {}
     try:
@@ -48,7 +61,6 @@ def update_item_type(mongo, condition=None, update_dict= None):
 def request_to_class(json_request={}):
     item_type = ItemType()
     for k, v in json_request.items():
-        if k in item_type.model:
             item_type.model[k]= v
     return item_type
 
@@ -58,7 +70,6 @@ def request_to_class(json_request={}):
 def request_to_change(json_request={}):
     change = {}
     for k, v in json_request.items():
-        if k in ItemType().model:
             change[k] = v
     return change
 

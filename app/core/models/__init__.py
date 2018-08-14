@@ -41,9 +41,9 @@ class FormMeta(object):
         self.model['meta'].update(meta_data)
 
     def items_to_dict(self):
-        for id, data in enumerate(self.items):
+        for item_id, data in enumerate(self.items):
             try:
-                data.id = id
+                data.item_id = item_id
                 self.model['items'].append(data.model)
             except:
                 pass
@@ -52,22 +52,23 @@ class FormMeta(object):
 class Item(object):
     def __init__(self):
         self.model = {
-            'id': None,
+            'item_id': None,
             'item_name': None,
             'item_type': None,
             'extra': None,
+            'type':None,
             'payload': {
                 'options': []
             }
         }
 
     @property
-    def id(self):
-        return self.model['id']
+    def item_id(self):
+        return self.model['item_id']
 
-    @id.setter
-    def id(self, id_data):
-        self.model['id'] = id_data
+    @item_id.setter
+    def item_id(self, id_data):
+        self.model['item_id'] = id_data
 
     @property
     def item_type(self):
@@ -226,7 +227,7 @@ class Form(object):
 
 
 class Value(object):
-    def __int__(self):
+    def __init__(self):
         self.model = {
             'item_id':None,
             'item_type':None,
@@ -282,6 +283,7 @@ class User(object):
     @property
     def id(self):
         return self.model['id']
+
 
     @id.setter
     def id(self, id_data):
@@ -371,3 +373,50 @@ class Event(object):
         self.model['using'] = using_data
 
 
+class Lesson(object):
+    def __init__(self):
+        self.model = {
+            'lesson_attribute':None,
+            'lesson_state':None,
+            'lesson_teacher_id':None,
+            'lesson_name':None,
+            'lesson_teacher_name':None,
+            'lesson_semester':None,
+            'lesson_level':None,
+            'lesson_teacher_unit':None,
+            'lesson_unit':None,
+            'lesson_year':None,
+            'lesson_type':None,
+            'lesson_cases':[]
+        }
+        self.lesson_cases = []
+
+    def lesson_case_to_dict(self):
+        for id, data in enumerate(self.lesson_cases):
+            try:
+                data.id = id
+                self.model['lesson_cases'].append(data.model)
+            except:
+                pass
+
+
+class LessonCase(object):
+    def __init__(self):
+        self.model = {
+            'id':None,
+            'lesson_week':None,
+            'lesson_time':None,
+            'lesson_class': None,
+            'lesson_weekday':None,
+            'lesson_room':None,
+            'assign_group':None,
+            'lesson_attention_reason':None
+        }
+
+    @property
+    def id(self):
+        return self.model['id']
+
+    @id.setter
+    def id(self, id_data):
+        self.model['id'] = id_data
