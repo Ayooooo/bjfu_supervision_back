@@ -13,7 +13,7 @@ def new_form_meta():
     form_meta = request_to_class(request.json)
     try:
         insert_form_meta(mongo, form_meta)
-    except ServerSelectionTimeoutError as e:
+    except Exception as e:
         return jsonify({
             'code': 500,
             'message': str(e),
@@ -32,7 +32,7 @@ def get_form_metas():
     from run import mongo
     try:
         form_metas = find_form_metas(mongo, url_condition.filter_dict)
-    except PyMongoError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
             'message': str(e),
@@ -41,24 +41,11 @@ def get_form_metas():
     form_metas = sort_limit(form_metas, url_condition.sort_limit_dict)
     paginate = Paginate(form_metas, url_condition.page_dict)
     form_metas_list = [to_json_list(form_meta) for form_meta in paginate.data_page]
-    prev = None
-    if paginate.has_prev:
-        prev = url_for('form_meta_blueprint.get_form_metas', _page=paginate.page - 1)
-    next = None
-    if paginate.has_next:
-        next = url_for('form_meta_blueprint.get_form_metas', _page=paginate.page + 1)
     return jsonify({
         'code':200,
         'message':'',
         'form_metas':[object_to_str(form_metas_list_node) for form_metas_list_node in form_metas_list],
-        'prev': prev,
-        'next': next,
-        'has_prev': paginate.has_prev,
-        'has_next': paginate.has_next,
         'total': paginate.total,
-        'page_num': paginate.page_num,
-        'page_now': paginate.page,
-        'per_page': paginate.per_page
     }),200
 
 @form_meta_blueprint.route('/form_metas/<string:_id>')
@@ -66,7 +53,7 @@ def get_form_meta(_id):
     from run import mongo
     try:
         form_meta = find_form_meta(mongo, _id)
-    except PyMongoError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
             'message':str(e),
@@ -97,7 +84,7 @@ def delete_from_meta(_id):
         }),404
     try:
         delete_form_meta(mongo, {'_id':ObjectId(_id)})
-    except PyMongoError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
             'message':str(e),
@@ -122,7 +109,7 @@ def change_form_meta(_id):
         }),404
     try:
         delete_form_meta(mongo, {'_id':ObjectId(_id)})
-    except PyMongoError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
             'message':str(e),
@@ -131,7 +118,7 @@ def change_form_meta(_id):
     form_meta = request_to_class(request.json)
     try:
         insert_form_meta(mongo, form_meta)
-    except ServerSelectionTimeoutError as e:
+    except Exception as e:
         return jsonify({
             'code': 500,
             'message': str(e),

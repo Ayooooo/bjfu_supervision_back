@@ -13,32 +13,19 @@ def get_item_types():
     from run import mongo
     try:
         item_types = find_item_types(mongo, url_condition.filter_dict)
-    except:
+    except Exception as e:
         return jsonify({
             'code':500,
-            'message':'',
+            'message':str(e),
             'item_types':None
         }),500
     item_types = sort_limit(item_types, url_condition.sort_limit_dict)
     paginate = Paginate(item_types, url_condition.page_dict)
-    prev = None
-    if paginate.has_prev:
-        prev = url_for('item_type_blueprint.get_item_types', _page=paginate.page - 1)
-    next = None
-    if paginate.has_next:
-        next = url_for('item_type_blueprint.get_item_types', _page=paginate.page + 1)
     return jsonify({
         'code':200,
         'message':'',
         'item_types':[object_to_str(item_type) for item_type in item_types],
-        'prev': prev,
-        'next': next,
-        'has_prev': paginate.has_prev,
-        'has_next': paginate.has_next,
         'total': paginate.total,
-        'page_num': paginate.page_num,
-        'page_now': paginate.page,
-        'per_page': paginate.per_page
     }),200
 
 
@@ -48,10 +35,10 @@ def new_item_type():
     item_type = request_to_class(request.json)
     try:
         insert_item_type(mongo, item_type)
-    except:
+    except Exception as e:
         return jsonify({
             'code':500,
-            'message':'',
+            'message':str(e),
             'item_type':None
         }),500
     return jsonify({
@@ -66,10 +53,10 @@ def get_item_type(_id):
     from run import mongo
     try:
         item_type = find_item_type(mongo, {'_id':ObjectId(_id)})
-    except:
+    except Exception as e:
         return jsonify({
             'code':500,
-            'message':'',
+            'message':str(e),
             'item_type': None
         }),500
     if item_type is None:
@@ -97,10 +84,10 @@ def del_item_type(_id):
         }),404
     try:
         delete_item_type(mongo, {'_id':ObjectId(_id)})
-    except:
+    except Exception as e:
         return jsonify({
             'code':500,
-            'message':'',
+            'message':str(e),
             'item_type': None
         }),500
     return jsonify({
@@ -123,10 +110,10 @@ def change_item_type(_id):
     change = request_to_change(request.json)
     try:
         update_item_type(mongo, {'_id':ObjectId(_id)}, change)
-    except:
+    except Exception as e:
         return jsonify({
             'code':500,
-            'message':'',
+            'message':str(e),
             'item_type': None
         }),500
     return jsonify({

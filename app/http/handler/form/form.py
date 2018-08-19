@@ -12,7 +12,7 @@ def new_form():
     form = request_to_class(request.json)
     try:
         insert_form(mongo, form)
-    except ServerSelectionTimeoutError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
             'message':str(e),
@@ -31,7 +31,7 @@ def get_forms():
     from run import mongo
     try:
         forms = find_forms(mongo, url_condition.filter_dict)
-    except PyMongoError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
             'message':str(e),
@@ -40,24 +40,11 @@ def get_forms():
     forms = sort_limit(forms, url_condition.sort_limit_dict)
     paginate = Paginate(forms, url_condition.page_dict)
     forms_list = [to_json_list(form) for form in paginate.data_page]
-    prev = None
-    if paginate.has_prev:
-        prev = url_for('form_blueprint.get_forms', _page=paginate.page - 1)
-    next = None
-    if paginate.has_next:
-        next = url_for('form_blueprint.get_forms', _page=paginate.page + 1)
     return jsonify({
         'code': 200,
         'message': '',
         'forms': [object_to_str(forms_list_node) for forms_list_node in forms_list],
-        'prev': prev,
-        'next': next,
-        'has_prev': paginate.has_prev,
-        'has_next': paginate.has_next,
         'total': paginate.total,
-        'page_num': paginate.page_num,
-        'page_now': paginate.page,
-        'per_page': paginate.per_page
     }),200
 
 
@@ -66,7 +53,7 @@ def get_form(_id):
     from run import mongo
     try:
         form = find_form(mongo, _id)
-    except PyMongoError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
             'message':str(e),
@@ -97,10 +84,10 @@ def delete_from(_id):
         }),404
     try:
         delete_form(mongo, {'_id':ObjectId(_id)})
-    except PyMongoError as e:
+    except Exception as e:
         return jsonify({
             'code':500,
-            'message':'',
+            'message':str(e),
             'form':None
         })
     return jsonify({
@@ -122,10 +109,10 @@ def change_form(_id):
         }),404
     try:
         update_form(mongo, {'_id':ObjectId(_id)}, request.json)
-    except:
+    except Exception as e:
         return jsonify({
             'code':500,
-            'message':'',
+            'message':str(e),
             'form':None
         }),500
     return jsonify({
